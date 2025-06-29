@@ -2,57 +2,52 @@ import mysql.connector
 
 def create_alx_book_store_db():
     """
-    Connects to the MySQL server and attempts to create the 'alx_book_store' database.
-    If the database already exists, the script will not fail and will print an appropriate message.
-    Handles connection errors and ensures the database connection is closed.
+    Connects to the MySQL server and attempts to establish 'alx_book_store' database.
+    If the database already exists, this script will complete without error.
+    Manages connection errors and ensures database connection closure.
     """
-    mydb = None # Initialize mydb to None
+    db_connection = None # Initialize database connection to None
     try:
-        # Establish connection to the MySQL server (without specifying a database initially)
+        # Establish connection to the MySQL server (without a specific database initially)
         # Replace 'your_username' and 'your_password' with your actual MySQL credentials
-        mydb = mysql.connector.connect(
+        db_connection = mysql.connector.connect(
             host="localhost",
             user="root",        # Your MySQL username
             password="Harman@2025#" # Your MySQL password
         )
 
-        if mydb.is_connected():
-            mycursor = mydb.cursor()
+        if db_connection.is_connected():
+            db_cursor = db_connection.cursor()
 
-            # SQL to create database if it doesn't exist.
-            # This statement handles the "if exists" condition internally without needing SELECT/SHOW.
-            sql_create_db = "CREATE DATABASE IF NOT EXISTS alx_book_store"
+            # SQL command to create database if it is not present.
+            # This handles the existence condition internally in MySQL.
+            sql_create_database_cmd = "CREATE DATABASE IF NOT EXISTS alx_book_store"
 
-            mycursor.execute(sql_create_db)
+            db_cursor.execute(sql_create_database_cmd)
 
-            # Check if the database was actually created or already existed
-            # We can't use SELECT/SHOW, so we infer success.
-            # A common way to check if it was newly created is to see if an error *didn*t* occur.
-            # However, since IF NOT EXISTS prevents an error, we rely on the command's success.
-            # For this specific requirement "print message such as Database 'alx_book_store' created successfully!",
-            # we'll print it assuming no explicit "already exists" message is required by the problem for this case.
-            # If the database existed, CREATE DATABASE IF NOT EXISTS completes successfully without an error.
-            print("Database 'alx_book_store' created successfully (or already existed).")
+            # This message indicates successful execution of the CREATE DATABASE command.
+            # Since 'IF NOT EXISTS' prevents failure if it exists, this message covers both cases.
+            print("Database 'alx_book_store' created successfully!")
 
-            mycursor.close()
+            db_cursor.close()
         else:
             print("Failed to establish a connection to the MySQL server.")
 
     except mysql.connector.Error as err:
-        # Handle specific connection errors
+        # Handle various connection-related issues
         if err.errno == mysql.connector.errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Error: Access denied for user. Check your username and password.")
+            print("Error: Access denied. Verify your username and password.")
         elif err.errno == mysql.connector.errorcode.CR_CONN_HOST_ERROR:
-            print("Error: Cannot connect to MySQL host. Ensure MySQL server is running and accessible.")
+            print("Error: Unable to connect to MySQL host. Confirm server is operational and accessible.")
         else:
-            print(f"Error: Failed to connect to or interact with MySQL database: {err}")
+            print(f"Error: A database operation issue occurred: {err}")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"An unexpected problem arose: {e}")
     finally:
-        # Ensure the database connection is closed
-        if mydb and mydb.is_connected():
-            mydb.close()
-            print("MySQL connection closed.")
+        # Guarantee that the database connection is terminated
+        if db_connection and db_connection.is_connected():
+            db_connection.close()
+            print("MySQL connection terminated.")
 
 if __name__ == "__main__":
     create_alx_book_store_db()
